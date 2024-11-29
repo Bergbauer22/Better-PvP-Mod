@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "net.bergbauer.better_pvp.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ExampleMixin"
+  ],
+  "client": [
+    "ChatHudMixin",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
