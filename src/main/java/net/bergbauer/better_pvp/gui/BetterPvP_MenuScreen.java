@@ -13,8 +13,6 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class BetterPvP_MenuScreen extends Screen {
     public BetterPvP_MenuScreen() {
-        // The parameter is the title of the screen,
-        // which will be narrated when you enter the screen.
         super(Text.literal("BetterPvP"));
     }
 
@@ -27,13 +25,9 @@ public class BetterPvP_MenuScreen extends Screen {
     }
     @Override
     protected void init() {
-        exitButton = ButtonWidget.builder(Text.literal("Exit"), button -> {
-                    System.out.println("You clicked button1!");
-                    this.close();
-
-                })
+        exitButton = ButtonWidget.builder(Text.literal("Exit"), button -> this.close())
                 .dimensions(width - 60, 20, 40, 20)
-                .tooltip(Tooltip.of(Text.literal("Plottwist: You close the Menu")))
+                .tooltip(Tooltip.of(Text.literal("You close the current menu")))
                 .build();
         addDrawableChild(exitButton);
     }
@@ -59,7 +53,6 @@ public class BetterPvP_MenuScreen extends Screen {
         scaledY = (int) (YTeamCategoryPosition / scaleTeamCategory);
         context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFFFFF);
         matrices.pop();
-
         //SettingsCategory-Settings
         float scaleSettingCategory = 2f;
         int YSettingCategoryPosition = 190;

@@ -162,7 +162,7 @@ public class TeamManager_Screen extends Screen {
                 writer.newLine();
             }
         } catch (IOException e) {
-            //e.printStackTrace();
+
         }
     }
 
@@ -240,7 +240,6 @@ public class TeamManager_Screen extends Screen {
             // Füge ein neues Sub-Objekt hinzu
             SubObject newSubObject = new SubObject(this, (this.width - 200) / 2, newYPos, 200);
             subObjects.add(newSubObject);
-
             updateSubObjectPositions();
         }
 
@@ -273,7 +272,6 @@ public class TeamManager_Screen extends Screen {
 
             for (int i = 0; i < subObjects.size(); i++) {
                 int newYPos = 50 + i * spacing;
-                //subObjects.get(i).drawPlayerIcon(matrices);
                 if(subObjects.get(i).getGameProfileByName() != null){
                     matrices.push();
                     matrices.scale(0.625f, 0.625f, 0.625f);
@@ -286,9 +284,7 @@ public class TeamManager_Screen extends Screen {
                     context.drawTexture(Identifier.of(("minecraft:textures/entity/player/wide/steve.png")),(int)((width / 2 - 125) * 1.6),(int)(subObjects.get(i).textField.getY() * 1.6),32,32,32,32);
                     matrices.pop();
                 }
-                //System.out.println("Player: " + subObjects.get(i).textField.getText() + " | GameProfile: " + subObjects.get(i).getGameProfileByName());
                 assert MinecraftClient.getInstance().player != null;
-                //MinecraftClient.getInstance().player.sendMessage(Text.of("Player: " + subObjects.get(i).textField.getText() + " | GameProfile: " + subObjects.get(i).getGameProfileByName()));
             }
         }
 
@@ -516,9 +512,7 @@ public class TeamManager_Screen extends Screen {
             int buttonSize = 20;
             this.deleteButton = ButtonWidget.builder(Text.literal("🗑"), button -> {
                         // Logik für das Löschen des Objekts
-                        System.out.println("Vor TeamRemove: " + teamObjects.indexOf(this));
                         teamObjects.remove(this); // Entferne dieses Objekt aus der Liste
-                        System.out.println("NachTeamRemove: " + teamObjects.indexOf(this));
                         updateTeamObjectPositions(); // Aktualisiere die Y-Positionen nach dem Löschen
                         //entferne Objekte
                         parentScreen.remove(editButton);

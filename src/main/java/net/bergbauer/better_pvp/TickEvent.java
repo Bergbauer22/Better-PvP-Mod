@@ -22,7 +22,6 @@ public class TickEvent {
         if(Cooldown > 50){
             Cooldown = 0;
             PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
-            System.out.println("Reload");
         }
     }
 }

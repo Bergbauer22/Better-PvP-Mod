@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFW;
 public class KeyBindingHandler {
     // KeyBinding Objekt für die Taste 'G'
     public static KeyBinding keyBinding;
-    public static KeyBinding debugBinding;
     public static void register() {
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "OpenGUI",  // Der Name der Keybinding (wird in den Optionen angezeigt)

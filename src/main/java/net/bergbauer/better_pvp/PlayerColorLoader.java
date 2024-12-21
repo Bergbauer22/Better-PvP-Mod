@@ -1,20 +1,15 @@
 package net.bergbauer.better_pvp;
 
-import net.bergbauer.better_pvp.gui.TeamManager_Screen;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static net.bergbauer.better_pvp.gui.TeamManager_Screen.TeamCategoryButton.colors;
 
@@ -30,7 +25,6 @@ public class PlayerColorLoader implements ClientModInitializer {
     public static void main(String[] args) {
         // Lade die Datei beim Start und beginne mit der Überwachung
         loadUserColors(filePath);
-
     }
 
 
@@ -42,7 +36,7 @@ public class PlayerColorLoader implements ClientModInitializer {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length != 3) {
-                    System.err.println("Ungültiges Zeilenformat: " + line);
+                    System.err.println("Invalid line format: " + line);
                     continue;
                 }
 
@@ -57,19 +51,11 @@ public class PlayerColorLoader implements ClientModInitializer {
                         player = player.trim();
                         USER_COLORS.put(player, color);
                     }
-                } else {
-                    System.err.println("Ungültige Farbe: " + colorName);
                 }
             }
 
-            // Beispielausgabe
-            /*System.out.println("Spielerfarben wurden neu geladen:");
-            for (Map.Entry<String, TextColor> entry : USER_COLORS.entrySet()) {
-                System.out.println(entry.getKey() + " -> " + entry.getValue());
-            }*/
+        } catch (IOException ignored) {
 
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

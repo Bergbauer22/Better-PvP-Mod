@@ -69,8 +69,6 @@ public class ArmorTextureRenderer<T extends LivingEntity, A extends BipedEntityM
                         overlay = Identifier.of("better_pvp", "textures/entity/player/colored_armor/netheride/netheride_armor_layer_2_color" + color + ".png");
             }
 
-
-            //System.out.println("Entity: " + playerName + "  Rüstung: " + overlay + " Farbe: " + color);
             VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(
                     vertexConsumers, ModRenderLayers.ARMOR_TRANSLUCENT_NO_CULL.apply(overlay),
                     true

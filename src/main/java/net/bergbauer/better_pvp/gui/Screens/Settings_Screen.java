@@ -2,17 +2,13 @@ package net.bergbauer.better_pvp.gui.Screens;
 
 import net.bergbauer.better_pvp.gui.BetterPvP_MenuScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.joml.Matrix4f;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,7 +19,6 @@ public class Settings_Screen extends Screen {
     private final List<Tab> tabs = new ArrayList<>();
     private Tab activeTab;
     private ButtonWidget backButton;
-    private ButtonWidget debugButton;
     private static final LinkedHashMap<String, Boolean> settingsState = new LinkedHashMap<>();
     private static final String CONFIG_PATH = "config/better_pvp_settings.txt";
 

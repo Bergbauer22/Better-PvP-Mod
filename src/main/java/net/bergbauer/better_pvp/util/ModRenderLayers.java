@@ -6,7 +6,6 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-
 import java.util.function.Function;
 
 import static net.minecraft.client.render.RenderPhase.*;
