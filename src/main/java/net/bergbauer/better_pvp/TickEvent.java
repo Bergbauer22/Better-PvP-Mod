@@ -19,7 +19,7 @@ public class TickEvent {
     private static void executeGameLogic() {
         // Hier deine Logik, die pro Tick ausgeführt wird
         Cooldown++;
-        if(Cooldown > 50){
+        if(Cooldown > 10){
             Cooldown = 0;
             PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
         }

@@ -2,6 +2,7 @@ package net.bergbauer.better_pvp.gui;
 import com.mojang.authlib.GameProfile;
 
 import net.bergbauer.better_pvp.PlayerColorLoader;
+import net.bergbauer.better_pvp.gui.Screens.TemporaryScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -9,6 +10,8 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,6 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
@@ -204,11 +208,12 @@ public class TeamManager_Screen extends Screen {
         private final List<SubObject> subObjects; // Liste der SubObject-Instanzen
         private ButtonWidget addButton;
         private final int spacing = 30; // Abstand zwischen den Unterobjekten
-
+        private int delayTicks = -1; // Startet mit -1, um kein Delay zu haben
         public TeamDetail_Screen(TeamCategoryButton teamObject) {
             super(Text.literal("Team Detail"));
             this.teamObject = teamObject;
             this.subObjects = new ArrayList<>();
+            TeamCategoryButton currentTeamObject = teamObject;
         }
 
         @Override
@@ -356,7 +361,16 @@ public class TeamManager_Screen extends Screen {
                     && mouseY >= buttonY && mouseY <= buttonY + buttonHeight;
         }
 
+        @Override
+        public void tick() {
+            if (delayTicks > 0) {
+                delayTicks--;  // Zähle Ticks runter
+            } else if (delayTicks == 0) {
+                // Delay abgelaufen, Aktion ausführen
 
+                delayTicks = -1; // Reset, um die Aktion nicht ständig auszuführen
+            }
+        }
 
         @Override
         public void close() {
@@ -496,6 +510,7 @@ public class TeamManager_Screen extends Screen {
             this.yPos = yPos; // Setze die Y-Position
             parentScreen = tM_screen;
             int textFieldWidth = 200;
+            int delayTicks = -1; // Startet mit -1, um kein Delay zu haben
             int textFieldHeight = 20;
             this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, width/2 - 100, yPos, textFieldWidth, textFieldHeight, Text.literal(defaultText));
             this.textField.setEditable(false); // Initial nicht bearbeitbar
@@ -532,6 +547,9 @@ public class TeamManager_Screen extends Screen {
                 teamColor = colors[currentColorIndex]; // Setze die neue Farbe
                 colorButton.setMessage(Text.literal("🟥").setStyle(Style.EMPTY.withColor(teamColor))); // Leere Nachricht, Farbe zeigt sich über Hintergrund
                 PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
+                saveTeamObjects();
+                MinecraftClient.getInstance().setScreenAndRender(MinecraftClient.getInstance().currentScreen);
+                //MinecraftClient.getInstance().setScreen(new TemporaryScreen(MinecraftClient.getInstance().currentScreen));
             }).dimensions(colorButtonXPos, yPos, buttonSize, buttonSize).build();
             colorButton.setMessage(Text.literal("🟥").setStyle(Style.EMPTY.withColor(teamColor)));
 
@@ -550,7 +568,6 @@ public class TeamManager_Screen extends Screen {
             int dropdownButtonXPos = editButtonXPos + buttonSize + 5;
             this.dropdownButton = ButtonWidget.builder(Text.literal("🔵"), button -> {
                         // Logik zum Ausklappen des Inhalts
-                        System.out.println("Dropdown clicked");
                         MinecraftClient.getInstance().setScreen(new TeamDetail_Screen(this)); // Neuer Screen wird geöffnet
                     })
                     .dimensions(dropdownButtonXPos, yPos, buttonSize, buttonSize)
