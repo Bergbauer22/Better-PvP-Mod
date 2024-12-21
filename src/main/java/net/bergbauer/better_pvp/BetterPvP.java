@@ -12,5 +12,6 @@ public class BetterPvP implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("BetterPvP loaded succesfully");
+		PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
 	}
 }

@@ -1,6 +1,7 @@
 package net.bergbauer.better_pvp.gui;
 import com.mojang.authlib.GameProfile;
 
+import net.bergbauer.better_pvp.PlayerColorLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,6 +43,7 @@ public class TeamManager_Screen extends Screen {
     public void close() {
         saveTeamObjects(); // Speichert die Team-Objekte beim Schließen des Screens
         super.close();
+
     }
     @Override
     protected void init() {
@@ -227,9 +229,6 @@ public class TeamManager_Screen extends Screen {
             }).dimensions((this.width - 40) / 2, 50, 20, 20).build();
             addDrawableChild(addButton);
 
-
-
-
             // Lade existierende Unterobjekte
             loadSubObjects();
             updateSubObjectPositions();
@@ -291,8 +290,6 @@ public class TeamManager_Screen extends Screen {
                 assert MinecraftClient.getInstance().player != null;
                 //MinecraftClient.getInstance().player.sendMessage(Text.of("Player: " + subObjects.get(i).textField.getText() + " | GameProfile: " + subObjects.get(i).getGameProfileByName()));
             }
-
-
         }
 
         public static int getColorInt(Formatting formatting) {
@@ -370,6 +367,7 @@ public class TeamManager_Screen extends Screen {
             teamObject.setSubObjects(subObjects.stream().map(subObject -> subObject.getTextField().getText()).toList());
             saveTeamObjects();
             super.close();
+
         }
 
         public class SubObject {
@@ -423,7 +421,7 @@ public class TeamManager_Screen extends Screen {
             }
 
 
-            private Identifier getGameProfileByName() {
+            public Identifier getGameProfileByName() {
                 String playerName = textField.getText();
                 //GameProfile
                 GameProfile x = null;
@@ -478,7 +476,7 @@ public class TeamManager_Screen extends Screen {
         private Formatting teamColor = Formatting.DARK_RED;
         private int yPos; // Y-Position für das Layout
         // Liste von vordefinierten Farben (einfaches Farbauswahl-System)
-        private final Formatting[] colors ={
+        public static final Formatting[] colors ={
                 Formatting.DARK_RED,   // Dunkelrot
                 Formatting.RED,        // Rot
                 Formatting.GOLD,       // Gold
@@ -534,12 +532,12 @@ public class TeamManager_Screen extends Screen {
 
             // Farb-Auswahl-Knopf (zwischen Textfeld und Edit-Button)
             int colorButtonXPos = width/2 - 100 + textFieldWidth + 5;
-            //parentScreen.renderColorButton(,this.colorButton,teamColor);
             this.colorButton = ButtonWidget.builder(Text.literal(" "), button -> {
                 // Ändere die Farbe
                 currentColorIndex = (currentColorIndex + 1) % colors.length; // Zyklisches Durchgehen der Farben
                 teamColor = colors[currentColorIndex]; // Setze die neue Farbe
                 colorButton.setMessage(Text.literal("🟥").setStyle(Style.EMPTY.withColor(teamColor))); // Leere Nachricht, Farbe zeigt sich über Hintergrund
+                PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
             }).dimensions(colorButtonXPos, yPos, buttonSize, buttonSize).build();
             colorButton.setMessage(Text.literal("🟥").setStyle(Style.EMPTY.withColor(teamColor)));
 
@@ -556,7 +554,7 @@ public class TeamManager_Screen extends Screen {
 
             // Ausklapp-Button
             int dropdownButtonXPos = editButtonXPos + buttonSize + 5;
-            this.dropdownButton = ButtonWidget.builder(Text.literal("▼"), button -> {
+            this.dropdownButton = ButtonWidget.builder(Text.literal("🔵"), button -> {
                         // Logik zum Ausklappen des Inhalts
                         System.out.println("Dropdown clicked");
                         MinecraftClient.getInstance().setScreen(new TeamDetail_Screen(this)); // Neuer Screen wird geöffnet
@@ -588,9 +586,11 @@ public class TeamManager_Screen extends Screen {
             textField.setText(new_text);
             return textField.getText(); // Gibt den Text aus dem Textfeld zurück
         }
+
         public Formatting getTeamColor() {
             return this.teamColor;
         }
+
         private int getColorIndex(Formatting colorToFind) {
             for (int i = 0; i < colors.length; i++) {
                 if (colors[i] == colorToFind) { // Vergleich der Farbe
@@ -599,12 +599,5 @@ public class TeamManager_Screen extends Screen {
             }
             return -1; // Gibt -1 zurück, wenn die Farbe nicht gefunden wurde
         }
-
-
-
-
-
-
-
     }
 }

@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 public class KeyBindingHandler {
     // KeyBinding Objekt für die Taste 'G'
     public static KeyBinding keyBinding;
-
+    public static KeyBinding debugBinding;
     public static void register() {
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "OpenGUI",  // Der Name der Keybinding (wird in den Optionen angezeigt)
@@ -17,7 +17,6 @@ public class KeyBindingHandler {
                 GLFW.GLFW_KEY_G,               // Die Taste 'G'
                 "Better-PvP"   // Kategorie, unter der die Keybinding erscheint
         ));
-
         // Registriere ein Tick-Event, um auf das Drücken der Taste zu reagieren
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
