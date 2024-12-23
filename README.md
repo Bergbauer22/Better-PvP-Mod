@@ -1,49 +1,65 @@
-Better PvP
+# Better PvP
+Better PvP is a Fabric client-side modification that allows you to create and organize players into custom teams. This provides the opportunity to colorize player names in chat and even adds a nice outline of the specific team color to each individual player's armor. Every feature is toggleable and designed to be as flexible as possible. Overall, this mod enhances your in-game experience and significantly improves team-based PvP.
 
-Better PvP is a client-side Minecraft mod designed to enhance your PvP experience by allowing you to organize players into teams and customize the way they appear in-game. Whether you're playing in team-based mini-games or just want to add a bit of flair to your multiplayer sessions, Better PvP provides the tools to make that happen.
-Features
+![Replace this with a description](https://cdn.modrinth.com/data/cached_images/4d07e1d3dcd155016776c7dbab39e7eb1583906f.png)
 
-    Create and Manage Teams:
-    Organize players into teams directly from your client. Teams are flexible and can be modified at any time.
+## Functions
+**1. Team-Based Chat Colorization**
 
-    Armor Color Customization:
-    Automatically colorize the armor of teammates based on the team color. No more confusion in the heat of battle—identify allies with ease!
+When the setting to colorize players based on their team is enabled, each player's messages in the chat will be displayed in their team's color. This feature is especially useful when playing on multiplayer servers with prominent team dynamics, as it makes it easier to differentiate players by their team affiliation.
 
-    Name Tag Customization:
-    Customize the color of player names in chat to match their team, or even choose any color you prefer for individual players. Keep your team communications clear and stylish.
+![Chat Colorization Example](https://cdn.modrinth.com/data/cached_images/6909ab78bca7beb95c379ff206c235567d387b35.png)
 
-    Player Color Customization (Optional):
-    As an advanced option, Better PvP lets you colorize the players themselves based on team colors. This visual cue adds another layer of coordination to team-based play.
+**2. Team-Based Armor Colorization**
 
-    Fully Configurable Settings:
-    Every aspect of Better PvP is highly customizable. Adjust the colors, toggle features on or off, and fine-tune the settings to fit your gameplay preferences.
+With the setting enabled to colorize player armor based on their team, vanilla armor pieces will display an outline in the team's color. This feature helps distinguish players more easily in-game, even when they are wearing the same type of armor. Please note that this only works with vanilla armor and not with modded armor.
 
-How It Works
+**3. Team-Based Skin Colorization**
 
-    Teams Activated:
-    Once the mod is installed, you can enable team functionality through the settings menu.
+Enabling the setting to colorize player skins based on their team changes the entire skin to match the team’s color. This feature is useful if the team-based armor colorization is insufficient or cannot be applied due to the use of non-vanilla armor. By default, this setting is turned off.
 
-    Armor & Player Coloring:
-    When team members are assigned, the mod automatically colorizes their armor and/or character models according to team settings.
+![Review Color Changing](https://cdn.modrinth.com/data/cached_images/791e1363d36a4c2ef6cd789caab03a9aa4acc366.gif)
 
-    Chat Name Coloring:
-    Customize player name colors in chat based on their team, or set individual colors as desired.
+## Teams and Settings
+Managing teams in this mod is simple with a custom GUI.
+You can access the GUI using a customizable keybind (set to "G" by default). Once inside, you’ll find various options to get started:
 
-    In-Game Customization:
-    You can modify all the settings via an intuitive in-game menu, allowing you to easily tailor the appearance of teams, players, and chat names.
+**1. Team Manager Panel**
+- Navigate to the Team Manager Panel to create your first team.
+- Use the buttons on the right side to modify the team's name, color, or members.
+- Clicking the third button takes you to the individual team page, where you can add specific players to the team.
 
-Configuration Options
+![View to TeamManager](https://cdn.modrinth.com/data/cached_images/51132114b43fe58cafdce2894e5ca75fbd81239e.png)
 
-Better PvP provides a variety of options to suit your preferences:
+**2. Settings Panel**
+- Open the Settings Panel to configure which features of the mod you want to enable.
+- Use the checkboxes to easily activate or deactivate individual features based on your preferences.
 
-    Enable or disable armor colorization.
-    Choose from a full palette of colors for team members.
-    Customize chat name colors for individual players or entire teams.
-    Toggle player model coloring (optional feature).
-    Fine-tune the settings at any time from the settings screen.
 
-Installation
+![Setting Screen View](https://cdn.modrinth.com/data/cached_images/5aa227aaf1fbaaac29b4871d2ec6529f64aab425.png)
 
-    Download the latest version of Better PvP from the Releases.
-    Place the .jar file into your Minecraft mods folder.
-    Launch the game and access the settings to configure your teams and colors!
+
+
+
+
+
+
+
+
+## Tutorials and Showcase
+### How to create your first Team
+[![Video 1](https://img.youtube.com/vi/9pStwK2Vhdc/0.jpg)](https://www.youtube-nocookie.com/embed/9pStwK2Vhdc?autoplay=1&loop=1&playlist=9pStwK2Vhdc)
+
+*Click on the image to watch the video.*
+
+### How to change the color of the Team
+[![Video 2](https://img.youtube.com/vi/BGN4QNz-vq8/0.jpg)](https://www.youtube-nocookie.com/embed/BGN4QNz-vq8?autoplay=1&loop=1&playlist=BGN4QNz-vq8)
+
+*Click on the image to watch the video.*
+
+
+### How to change the Settings
+[![Video 3](https://img.youtube.com/vi/bc2jysijj_w/0.jpg)](https://www.youtube-nocookie.com/embed/bc2jysijj_w?autoplay=1&loop=1&playlist=bc2jysijj_w)
+
+*Click on the image to watch the video.*
+
