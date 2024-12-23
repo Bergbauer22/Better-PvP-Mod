@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Settings_Screen extends Screen {
 
@@ -28,10 +29,16 @@ public class Settings_Screen extends Screen {
     }
 
     public static boolean isSettingEnabled(String settingName) {
-        if (settingsState.firstEntry() == null) {
+        Boolean setting = settingsState.get(settingName);
+
+        if (setting != null) {
+            return setting;
+        } else {
             loadSettings();
+            setting = settingsState.get(settingName);
+            // or some default value
+            return Objects.requireNonNullElse(setting, false);
         }
-        return settingsState.get(settingName);
     }
 
     @Override
@@ -81,7 +88,9 @@ public class Settings_Screen extends Screen {
         int yPosition = 120;
         int textXPosition = 10; // Position des Textes (Einstellung)
         int checkboxXPosition = 150; // Position der Checkbox, weiter rechts
-
+        if(settingsState == null){
+            return;
+        }
         for (String setting : tab.getSettings().keySet()) {
             boolean currentState = settingsState.getOrDefault(setting, tab.getSettings().get(setting));
 
@@ -144,19 +153,40 @@ public class Settings_Screen extends Screen {
         }
     }
 
-    private static void loadSettings() {
+    public static void loadSettings() {
         File file = new File(CONFIG_PATH);
+
+        // Standardwerte für die Datei
+        String defaultContent = """
+        Teams activated=true
+        Show teams in chat=true
+        Paint armor in team color=true
+        Paint player in team color=false
+        """;
+
+        // Prüfen, ob die Datei existiert
         if (!file.exists()) {
-            System.out.println("Settings file not found, loading defaults.");
-            return;
+            try {
+                // Datei erstellen und Standardinhalt schreiben
+                if (file.createNewFile()) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                        writer.write(defaultContent);
+                        System.out.println("Settings file created with default values.");
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error creating settings file: " + e.getMessage());
+                return; // Abbrechen, wenn die Datei nicht erstellt werden kann
+            }
         }
 
+        // Datei einlesen
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("=");
                 if (parts.length == 2) {
-                    settingsState.put(parts[0], Boolean.parseBoolean(parts[1].trim()));
+                    settingsState.put(parts[0].trim(), Boolean.parseBoolean(parts[1].trim()));
                 }
             }
         } catch (IOException e) {
