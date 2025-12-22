@@ -2,7 +2,6 @@ package net.bergbauer.better_pvp.gui;
 import com.mojang.authlib.GameProfile;
 
 import net.bergbauer.better_pvp.PlayerColorLoader;
-import net.bergbauer.better_pvp.gui.Screens.TemporaryScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,8 +9,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
@@ -29,13 +26,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static net.bergbauer.better_pvp.BetterPvP.MY_LOGGER;
+
+
 public class TeamManager_Screen extends Screen {
     // Variablen
     public ButtonWidget backButton;
     public ButtonWidget createTeamButton;
     private final List<TeamCategoryButton> teamObjects;
     private final int spacing = 30;
-    private static final String CONFIG_PATH = "config/team_name.txt"; // Pfad zur Speicherkonfiguration
 
     // Konstruktor
     public TeamManager_Screen() {
@@ -165,7 +164,7 @@ public class TeamManager_Screen extends Screen {
 
                 writer.newLine();
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
     }
@@ -213,7 +212,6 @@ public class TeamManager_Screen extends Screen {
             super(Text.literal("Team Detail"));
             this.teamObject = teamObject;
             this.subObjects = new ArrayList<>();
-            TeamCategoryButton currentTeamObject = teamObject;
         }
 
         @Override
@@ -243,7 +241,7 @@ public class TeamManager_Screen extends Screen {
             int newYPos = 50 + subObjects.size() * spacing;
 
             // Füge ein neues Sub-Objekt hinzu
-            SubObject newSubObject = new SubObject(this, (this.width - 200) / 2, newYPos, 200);
+            SubObject newSubObject = new SubObject((this.width - 200) / 2, newYPos, 200);
             subObjects.add(newSubObject);
             updateSubObjectPositions();
         }
@@ -267,6 +265,8 @@ public class TeamManager_Screen extends Screen {
             //Headline
             super.render(context, mouseX, mouseY, delta);
             float scaleTitle = 3.0f;
+            float scaleFactor = 1.6f;
+            int playerHeadXPosition = (int)(((float) width / 2 - 125) * scaleFactor);
             MatrixStack matrices = context.getMatrices();
             matrices.push();
             matrices.scale(scaleTitle, scaleTitle, scaleTitle);
@@ -275,18 +275,17 @@ public class TeamManager_Screen extends Screen {
             context.drawCenteredTextWithShadow(textRenderer, Text.literal(teamObject.getTeamName()), scaledWidth, scaledY, getColorInt(getTeamColor(teamObject.getTeamName())));
             matrices.pop();
 
-            for (int i = 0; i < subObjects.size(); i++) {
-                int newYPos = 50 + i * spacing;
-                if(subObjects.get(i).getGameProfileByName() != null){
+            for (SubObject subObject : subObjects) {
+                if (subObject.getGameProfileByName() != null) {
                     matrices.push();
                     matrices.scale(0.625f, 0.625f, 0.625f);
-                    context.drawTexture(subObjects.get(i).getGameProfileByName(),(int)((width / 2 - 125) * 1.6),(int)(subObjects.get(i).textField.getY() * 1.6),32,32,32,32);
+                    context.drawTexture(RenderLayer::getGuiTextured, subObject.getGameProfileByName(), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
+                    //MY_LOGGER.info(subObject.getGameProfileByName().getNamespace() + " ..... " + subObject.getGameProfileByName().toString());
                     matrices.pop();
-                }
-                else{
+                } else {
                     matrices.push();
                     matrices.scale(0.625f, 0.625f, 0.625f);
-                    context.drawTexture(Identifier.of(("minecraft:textures/entity/player/wide/steve.png")),(int)((width / 2 - 125) * 1.6),(int)(subObjects.get(i).textField.getY() * 1.6),32,32,32,32);
+                    context.drawTexture(RenderLayer::getGuiTextured, Identifier.of(("minecraft:textures/entity/player/wide/steve.png")), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
                     matrices.pop();
                 }
                 assert MinecraftClient.getInstance().player != null;
@@ -319,7 +318,7 @@ public class TeamManager_Screen extends Screen {
                     }
                 }
             }
-            catch (IOException e) {
+            catch (IOException ignored) {
             }
             return x;
         }
@@ -377,7 +376,6 @@ public class TeamManager_Screen extends Screen {
             teamObject.setSubObjects(subObjects.stream().map(subObject -> subObject.getTextField().getText()).toList());
             saveTeamObjects();
             super.close();
-
         }
 
         public class SubObject {
@@ -386,7 +384,7 @@ public class TeamManager_Screen extends Screen {
             private ButtonWidget deleteButton;
 
 
-            public SubObject(TeamDetail_Screen screen, int x, int y, int width) {
+            public SubObject(int x, int y, int width) {
                 // Erstelle das Textfeld
                 this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x, y, width, 20, Text.literal("Player " + subObjects.size()));
                 this.textField.setEditable(false); // Initial nicht bearbeitbar
@@ -451,8 +449,7 @@ public class TeamManager_Screen extends Screen {
                 // Abrufen der Skin-Textur für das GameProfil
                 SkinTextures skinTexture = skinProvider.getSkinTextures(x);
                 if (skinTexture != null) {
-                    Identifier skinTexture_ = skinProvider.getSkinTextures(x).texture();
-                    return skinTexture_;
+                    return skinProvider.getSkinTextures(x).texture();
                 }
 
                 return null; // Wenn keine Textur gefunden wurde
@@ -484,7 +481,6 @@ public class TeamManager_Screen extends Screen {
         private final TeamManager_Screen parentScreen;
         //Attribute
         private Formatting teamColor = Formatting.DARK_RED;
-        private int yPos; // Y-Position für das Layout
         // Liste von vordefinierten Farben (einfaches Farbauswahl-System)
         public static final Formatting[] colors ={
                 Formatting.DARK_RED,   // Dunkelrot
@@ -507,10 +503,8 @@ public class TeamManager_Screen extends Screen {
         private int currentColorIndex = 0;
 
         public TeamCategoryButton(int yPos, String defaultText,TeamManager_Screen tM_screen,Formatting teamColor_) {
-            this.yPos = yPos; // Setze die Y-Position
             parentScreen = tM_screen;
             int textFieldWidth = 200;
-            int delayTicks = -1; // Startet mit -1, um kein Delay zu haben
             int textFieldHeight = 20;
             this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, width/2 - 100, yPos, textFieldWidth, textFieldHeight, Text.literal(defaultText));
             this.textField.setEditable(false); // Initial nicht bearbeitbar
@@ -583,7 +577,6 @@ public class TeamManager_Screen extends Screen {
 
         // Methode, um Y-Position zu ändern (wenn notwendig)
         public void setYPos(int yPos) {
-            this.yPos = yPos;
             textField.setY(yPos);
             deleteButton.setY(yPos);
             editButton.setY(yPos);

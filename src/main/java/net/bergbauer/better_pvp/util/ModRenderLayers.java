@@ -9,7 +9,7 @@ import net.minecraft.util.Util;
 import java.util.function.Function;
 
 import static net.minecraft.client.render.RenderPhase.*;
-
+/*
 public class ModRenderLayers {
     public static final Function<Identifier, RenderLayer> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize(texture -> {
         var params = RenderLayer.MultiPhaseParameters.builder()
@@ -27,3 +27,4 @@ public class ModRenderLayers {
         );
     });
 }
+*/

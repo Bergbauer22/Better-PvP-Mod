@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 public class BetterPvP implements ModInitializer {
 	public static final String MOD_ID = "better_pvp";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger MY_LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("BetterPvP loaded successfully :-)");
+		MY_LOGGER.info("BetterPvP loaded successfully");
 		PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
 	}
 }

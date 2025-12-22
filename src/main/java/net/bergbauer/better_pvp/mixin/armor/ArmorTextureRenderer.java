@@ -1,33 +1,11 @@
-package net.bergbauer.better_pvp.mixin;
+package net.bergbauer.better_pvp.mixin.armor;
 
 
-import net.bergbauer.better_pvp.gui.Screens.Settings_Screen;
-import net.bergbauer.better_pvp.util.ModRenderLayers;
-
-import net.minecraft.client.render.*;
-
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.Inject;
-
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static net.bergbauer.better_pvp.PlayerColorLoader.ColorIndexOfPlayer;
-import static net.bergbauer.better_pvp.PlayerColorLoader.USER_COLORS;
+//import net.bergbauer.better_pvp.util.ModRenderLayers;
 
 
-@Mixin(value = ArmorFeatureRenderer.class)
+
+/*@Mixin(value = ArmorFeatureRenderer.class)
 public class ArmorTextureRenderer<T extends LivingEntity, A extends BipedEntityModel<T>> {
     @Unique
     T currentEntity;
@@ -85,3 +63,4 @@ public class ArmorTextureRenderer<T extends LivingEntity, A extends BipedEntityM
         currentEntity = entity;
     }
 }
+*/

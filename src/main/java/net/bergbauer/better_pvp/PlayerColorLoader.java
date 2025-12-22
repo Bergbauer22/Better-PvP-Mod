@@ -17,16 +17,10 @@ public class PlayerColorLoader implements ClientModInitializer {
     public static final Map<String, TextColor> USER_COLORS = new HashMap<>();
     public static final String filePath = "config/team_objects.txt";
 
-    @Override
-    public void onInitializeClient() {
-        loadUserColors(filePath);
-
-    }
     public static void main(String[] args) {
         // Lade die Datei beim Start und beginne mit der Überwachung
         loadUserColors(filePath);
     }
-
 
     public static void loadUserColors(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -115,4 +109,8 @@ public class PlayerColorLoader implements ClientModInitializer {
         return -1;
     }
 
+    @Override
+    public void onInitializeClient() {
+
+    }
 }

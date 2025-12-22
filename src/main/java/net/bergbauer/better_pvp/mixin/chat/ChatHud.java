@@ -1,9 +1,8 @@
-package net.bergbauer.better_pvp.mixin;
+package net.bergbauer.better_pvp.mixin.chat;
 
 import net.bergbauer.better_pvp.PlayerColorLoader;
 import net.bergbauer.better_pvp.gui.Screens.Settings_Screen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.text.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,8 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 import java.util.Optional;
 
-@Mixin(ChatHud.class)
-public abstract class ChatHudMixin {
+/*
+    Dieser Code ist dafür verantwortlich, dass Spielernamen im Chat farbig angezeigt werden
+ */
+
+@Mixin(net.minecraft.client.gui.hud.ChatHud.class)
+public abstract class ChatHud {
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V",
             at = @At("HEAD"), cancellable = true)
     public void modifyChatMessage(net.minecraft.text.Text message, net.minecraft.network.message.MessageSignatureData signatureData, net.minecraft.client.gui.hud.MessageIndicator indicator, CallbackInfo ci) {

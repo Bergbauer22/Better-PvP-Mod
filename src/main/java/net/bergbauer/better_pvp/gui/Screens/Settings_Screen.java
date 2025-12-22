@@ -88,9 +88,6 @@ public class Settings_Screen extends Screen {
         int yPosition = 120;
         int textXPosition = 10; // Position des Textes (Einstellung)
         int checkboxXPosition = 150; // Position der Checkbox, weiter rechts
-        if(settingsState == null){
-            return;
-        }
         for (String setting : tab.getSettings().keySet()) {
             boolean currentState = settingsState.getOrDefault(setting, tab.getSettings().get(setting));
 

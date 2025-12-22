@@ -3,12 +3,13 @@
   "package": "net.bergbauer.better_pvp.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-
+    "armor.ArmorFeatureRendererMixin"
   ],
   "client": [
-    "ArmorTextureRenderer",
-    "ChatHudMixin",
-    "PlayerRendererMixin"
+    "armor.EquipmentRendererMixin",
+    "chat.ChatHud",
+    "entity.EntityRenderDispatcherMixin",
+    "entity.PlayerRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
