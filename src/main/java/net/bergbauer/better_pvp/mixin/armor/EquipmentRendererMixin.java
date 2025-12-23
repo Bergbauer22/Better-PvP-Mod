@@ -25,13 +25,16 @@ public class EquipmentRendererMixin {
             )
     )
     private RenderLayer modifyRenderLayer(Identifier texture, Operation<RenderLayer> original) {
-        if(!Settings_Screen.isSettingEnabled("Teams activated") || !Settings_Screen.isSettingEnabled("Paint armor in team color")){ original.call(texture);}
+        if(!Settings_Screen.isSettingEnabled("Teams activated") || !Settings_Screen.isSettingEnabled("Paint armor in team color"))
+        {
+            return original.call(texture);
+        }
 
         var ctx = PublicStaticFields.currentArmorContext;
         String entityName = ctx.getEntity().getName().getString();
         //MY_LOGGER.info("Name: " + entityName + "  Bool: " + String.valueOf(USER_COLORS.containsKey(entityName)));
         if (ctx.shouldModify() && USER_COLORS.containsKey(entityName)) {
-            MY_LOGGER.info("Text: {}  RL: {}", texture, original);
+            MY_LOGGER.info("Text: {} ", texture);
             int color = ColorIndexOfPlayer(entityName);
             Identifier overlay = switch (texture.toString()){
                 case "minecraft:textures/entity/equipment/humanoid/leather.png" ->
@@ -58,6 +61,12 @@ public class EquipmentRendererMixin {
                         Identifier.of("better_pvp", "textures/entity/player/colored_armor/netheride/netheride_armor_layer_1_color" + color + ".png");
                 case "minecraft:textures/entity/equipment/humanoid_leggings/netherite.png" ->
                         Identifier.of("better_pvp", "textures/entity/player/colored_armor/netheride/netheride_armor_layer_2_color" + color + ".png");
+                case "minecraft:textures/entity/equipment/humanoid/leather_overlay.png" ->
+                        Identifier.of("better_pvp", "textures/entity/player/colored_armor/leather/overlay/leather_armor_overlay_1_color" + color + ".png");
+                case "minecraft:textures/entity/equipment/humanoid_leggings/leather_overlay.png" ->
+                        Identifier.of("better_pvp", "textures/entity/player/colored_armor/leather/overlay/leather_armor_overlay_2_color" + color + ".png");
+                case "minecraft:textures/entity/equipment/humanoid/turtle_scute.png" ->
+                        Identifier.of("better_pvp", "textures/entity/player/colored_armor/turtle/turtle_armor_layer_1_color" + color + ".png");
                 default -> texture;
             };
             return RenderLayer.getArmorCutoutNoCull(overlay);
