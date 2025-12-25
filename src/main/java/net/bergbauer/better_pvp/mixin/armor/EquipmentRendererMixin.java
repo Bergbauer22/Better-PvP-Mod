@@ -31,7 +31,7 @@ public class EquipmentRendererMixin {
         }
 
         var ctx = PublicStaticFields.currentArmorContext;
-        String entityName = ctx.getEntity().getName().getString();
+        String entityName = ctx.entity().getName().getString();
         //MY_LOGGER.info("Name: " + entityName + "  Bool: " + String.valueOf(USER_COLORS.containsKey(entityName)));
         if (ctx.shouldModify() && USER_COLORS.containsKey(entityName)) {
             MY_LOGGER.info("Text: {} ", texture);
@@ -73,20 +73,4 @@ public class EquipmentRendererMixin {
         }
         return original.call(texture);
     }
-
-    /*@WrapOperation(
-            method = "render(Lnet/minecraft/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/util/Identifier;Lnet/minecraft/client/model/Model;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/util/Identifier;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "net/minecraft/client/model/Model.render (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;III)V"
-            )
-    )
-    private void modifyColor(Model instance, MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color, Operation<Void> original) {
-        var ctx = PublicStaticFields.currentArmorContext;
-        var percentage = 1F;
-        MY_LOGGER.info("Color:" + color + "  Original: " + original + "  Model: " + instance + "  VertexCon: " + vertices + "  Overlay: " + overlay + "  Matrix: " + matrices);
-        original.call(instance, matrices, vertices, light, overlay, ColorHelper.withAlpha(ColorHelper.channelFromFloat(0.7f), color));
-    }
-    // The Mod Show me your Skin was a real help for fixing Update Problems---Thank you
-    */
 }

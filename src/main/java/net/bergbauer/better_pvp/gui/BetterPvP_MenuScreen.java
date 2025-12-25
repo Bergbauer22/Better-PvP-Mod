@@ -8,8 +8,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
+
 @Environment(EnvType.CLIENT)
 public class BetterPvP_MenuScreen extends Screen {
     public BetterPvP_MenuScreen() {
@@ -36,33 +37,33 @@ public class BetterPvP_MenuScreen extends Screen {
         //Headline
         super.render(context, mouseX, mouseY, delta);
         float scaleTitle = 3.0f;
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.scale(scaleTitle, scaleTitle, scaleTitle);
+        Matrix3x2fStack matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.scale(scaleTitle, scaleTitle);
         int scaledWidth = (int) ((float) width / 2 / scaleTitle);
         int scaledY = (int) (20 / scaleTitle);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("BetterPvP"), scaledWidth, scaledY, 11141120);
-        matrices.pop();
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("BetterPvP"), scaledWidth, scaledY, 0xFFFF0000  );
+        matrices.popMatrix();
         //TeamCategory-Settings
         float scaleTeamCategory = 2f;
         int YTeamCategoryPosition = 160;
         //TeamManagerButton
-        matrices.push();
-        matrices.scale(scaleTeamCategory, scaleTeamCategory, scaleTeamCategory);
+        matrices.pushMatrix();
+        matrices.scale(scaleTeamCategory, scaleTeamCategory);
         scaledWidth = (int) ((float) width / 2 / scaleTeamCategory);
         scaledY = (int) (YTeamCategoryPosition / scaleTeamCategory);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFFFFF);
-        matrices.pop();
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFFFFFFF );
+        matrices.popMatrix();
         //SettingsCategory-Settings
         float scaleSettingCategory = 2f;
         int YSettingCategoryPosition = 190;
-        //TeamManagerButton
-        matrices.push();
-        matrices.scale(scaleSettingCategory, scaleSettingCategory, scaleSettingCategory);
+        //SettingsButton
+        matrices.pushMatrix();
+        matrices.scale(scaleSettingCategory, scaleSettingCategory);
         scaledWidth = (int) ((float) width / 2 / scaleSettingCategory);
         scaledY = (int) (YSettingCategoryPosition / scaleSettingCategory);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("Settings"), scaledWidth, scaledY, 0xFFFFFF);
-        matrices.pop();
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("Settings"), scaledWidth, scaledY, 0xFFFFFFFF);
+        matrices.popMatrix();
     }
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

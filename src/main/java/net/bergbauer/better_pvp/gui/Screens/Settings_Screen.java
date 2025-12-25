@@ -7,8 +7,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -116,27 +117,27 @@ public class Settings_Screen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        MatrixStack matrices = context.getMatrices();
+        Matrix3x2fStack matrices = context.getMatrices();
         float titleScale = 2.0f;
 
         // Zeichne Titel
-        matrices.push();
-        matrices.scale(titleScale, titleScale, titleScale);
+        matrices.pushMatrix();
+        matrices.scale(titleScale, titleScale);
         int scaledWidth = (int) ((float) width / 2 / titleScale);
         int scaledY = (int) (20 / titleScale);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("Settings"), scaledWidth, scaledY, 11141290);
-        matrices.pop();
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("Settings"), scaledWidth, scaledY, 0xFFA800A8);
+        matrices.popMatrix();
 
         // Zeichne Tabs
         int yPosition = 40;
         float tabScale = 2.0f;
-        matrices.push();
-        matrices.scale(tabScale, tabScale, tabScale);
+        matrices.pushMatrix();
+        matrices.scale(tabScale, tabScale);
         for (Tab tab : tabs) {
-            context.drawText(textRenderer, Text.literal(tab.getName()), 10, yPosition, 11141120, true);
+            context.drawText(textRenderer, Text.literal(tab.getName()), 10, yPosition, 0xFFFF0000, true);
             yPosition += 25;
         }
-        matrices.pop();
+        matrices.popMatrix();
     }
 
     private void saveSettings() {

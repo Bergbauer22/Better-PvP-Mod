@@ -27,19 +27,28 @@ public abstract class PlayerRenderer {
     public void getCustomSkin(PlayerEntityRenderState playerEntityRenderState, CallbackInfoReturnable<Identifier> cir) {
         Entity entity = EntityContext.getCurrentEntity();
 
-        if(!Settings_Screen.isSettingEnabled("Teams activated") || !Settings_Screen.isSettingEnabled("Paint player in team color") || !entity.isPlayer())
-        {
-            if(entity instanceof  AbstractClientPlayerEntity player){
-                cir.setReturnValue(player.getSkinTextures().texture());
-            }
+        // 🔥 WICHTIG: GUI / Preview / Cache → KEINE Entity
+        if (entity == null) {
+            return;
         }
-        else if (entity instanceof AbstractClientPlayerEntity player){
-            // Hier wird der Skin ersetzt, falls der Spielername übereinstimmt
 
-            Identifier customSkin = PlayerColorLoader.getCustomSkin(player);
-            if (customSkin != null) {
-                cir.setReturnValue(customSkin);
-            }
+        // Nur echte Client-Spieler
+        if (!(entity instanceof AbstractClientPlayerEntity player)) {
+            return;
+        }
+
+        // Settings deaktiviert → Vanilla-Skin
+        if (!Settings_Screen.isSettingEnabled("Teams activated")
+                || !Settings_Screen.isSettingEnabled("Paint player in team color")) {
+
+            cir.setReturnValue(player.getSkinTextures().texture());
+            return;
+        }
+
+        // Custom Skin
+        Identifier customSkin = PlayerColorLoader.getCustomSkin(player);
+        if (customSkin != null) {
+            cir.setReturnValue(customSkin);
         }
     }
 }

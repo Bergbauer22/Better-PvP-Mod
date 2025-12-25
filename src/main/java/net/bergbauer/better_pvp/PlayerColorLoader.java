@@ -30,7 +30,7 @@ public class PlayerColorLoader implements ClientModInitializer {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length != 3) {
-                    System.err.println("Invalid line format: " + line);
+                    //System.err.println("Invalid line format: " + line);
                     continue;
                 }
 

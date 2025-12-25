@@ -1,23 +1,24 @@
 package net.bergbauer.better_pvp.gui;
-import com.mojang.authlib.GameProfile;
 
+import com.mojang.authlib.GameProfile;
 import net.bergbauer.better_pvp.PlayerColorLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.SkinTextures;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static net.bergbauer.better_pvp.BetterPvP.MY_LOGGER;
-
 
 public class TeamManager_Screen extends Screen {
     // Variablen
@@ -42,15 +42,15 @@ public class TeamManager_Screen extends Screen {
         this.teamObjects = new ArrayList<>(); // Initialisiere die Team-Liste
     }
 
-
     public void close() {
         saveTeamObjects(); // Speichert die Team-Objekte beim Schließen des Screens
         super.close();
-
     }
+
     @Override
     protected void init() {
         loadTeamObjects();
+
         backButton = ButtonWidget.builder(Text.literal("Back"), button -> {
                     saveTeamObjects();
                     MinecraftClient.getInstance().setScreen(new BetterPvP_MenuScreen());
@@ -67,17 +67,20 @@ public class TeamManager_Screen extends Screen {
         int yPos = this.height - buttonHeight - 10;
 
         createTeamButton = ButtonWidget.builder(Text.literal("Create a new Team"), button -> {
-                    addNewTeamObject();
+                    // erstelle neues Team und setze direkten Fokus auf das Textfeld
+                    TeamCategoryButton newTeam = addNewTeamObject();
+                    newTeam.textField.setEditable(true);
+                    newTeam.textField.setFocused(true);
                 })
                 .dimensions(xPos, yPos, buttonWidth, buttonHeight)
                 .tooltip(Tooltip.of(Text.literal("Click here to create a new Team")))
                 .build();
         addDrawableChild(createTeamButton);
     }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (TeamCategoryButton teamObject : teamObjects) {
-
             if (!isMouseOverButton(mouseX, mouseY, teamObject.textField)) {
                 teamObject.textField.setFocused(false);
                 teamObject.textField.setEditable(false);
@@ -100,8 +103,8 @@ public class TeamManager_Screen extends Screen {
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
-    private boolean isMouseOverButton(double mouseX, double mouseY,TextFieldWidget button) {
 
+    private boolean isMouseOverButton(double mouseX, double mouseY, TextFieldWidget button) {
         int buttonX = button.getX();
         int buttonY = button.getY();
         int buttonWidth = button.getWidth();
@@ -112,13 +115,21 @@ public class TeamManager_Screen extends Screen {
                 && mouseY >= buttonY && mouseY <= buttonY + buttonHeight;
     }
 
-
-    // Methode, um ein neues Team-Objekt zu erstellen und in der Liste zu speichern
-    private void addNewTeamObject() {
+    /**
+     * Erzeugt ein neues Team-Objekt, fügt es zur Liste hinzu und gibt es zurück.
+     * (wird von createTeamButton genutzt, damit caller direkt den Fokus setzen kann)
+     */
+    private TeamCategoryButton addNewTeamObject() {
         int newYPos = 50 + teamObjects.size() * spacing; // Berechne die Y-Position basierend auf der Anzahl der Objekte
-        TeamCategoryButton newTeamObject = new TeamCategoryButton(newYPos, "New Team " + (teamObjects.size() + 1),this,null);
+        TeamCategoryButton newTeamObject = new TeamCategoryButton(newYPos, "New Team " + (teamObjects.size() + 1), this, null);
         teamObjects.add(newTeamObject); // Füge das neue Team zur Liste hinzu
         updateTeamObjectPositions(); // Aktualisiere die Y-Positionen der Team-Objekte
+
+        // Setze das neue Textfeld sofort in Editiermodus + Fokus
+        newTeamObject.textField.setEditable(true);
+        newTeamObject.textField.setFocused(true);
+
+        return newTeamObject;
     }
 
     // Methode, um die Y-Positionen der Team-Objekte basierend auf ihrer Position in der Liste neu zu sortieren
@@ -129,26 +140,23 @@ public class TeamManager_Screen extends Screen {
         }
     }
 
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         float scaleTitle = 2.0f;
-        MatrixStack matrices = context.getMatrices();
+        Matrix3x2fStack matrices = context.getMatrices();
 
         // Skalierung anwenden
-        matrices.push(); // Speichert den aktuellen Zustand des MatrixStack
-        matrices.scale(scaleTitle, scaleTitle, scaleTitle); // Skalierung anwenden
+        matrices.pushMatrix(); // Speichert den aktuellen Zustand des MatrixStack
+        matrices.scale(scaleTitle, scaleTitle); // Skalierung anwenden
 
         // Berechnung der Position für den zentrierten Text unter Berücksichtigung der Skalierung
         int scaledWidth = (int) ((float) width / 2 / scaleTitle); // Bildschirmmitte bei skalierter Größe
         int scaledY = (int) (20 / scaleTitle); // Y-Position ebenfalls skalieren
 
         // Zeichne den skalierten, zentrierten Text
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 11141290);
-        matrices.pop(); // Skalierung zurücksetzen
-
-
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFA800A8);
+        matrices.popMatrix(); // Skalierung zurücksetzen
     }
 
     // Methode zum Speichern der Team-Objekte
@@ -200,14 +208,13 @@ public class TeamManager_Screen extends Screen {
         }
     }
 
-
-
     public class TeamDetail_Screen extends Screen {
         private final TeamCategoryButton teamObject;
         private final List<SubObject> subObjects; // Liste der SubObject-Instanzen
         private ButtonWidget addButton;
         private final int spacing = 30; // Abstand zwischen den Unterobjekten
         private int delayTicks = -1; // Startet mit -1, um kein Delay zu haben
+
         public TeamDetail_Screen(TeamCategoryButton teamObject) {
             super(Text.literal("Team Detail"));
             this.teamObject = teamObject;
@@ -228,7 +235,7 @@ public class TeamManager_Screen extends Screen {
 
             // [+] Button hinzufügen
             addButton = ButtonWidget.builder(Text.literal("+"), button -> {
-                addSubObject(); // Methode, um ein neues Unterobjekt hinzuzufügen
+                addSubObject(true); // ✅ NUR hier Fokus
             }).dimensions((this.width - 40) / 2, 50, 20, 20).build();
             addDrawableChild(addButton);
 
@@ -237,14 +244,29 @@ public class TeamManager_Screen extends Screen {
             updateSubObjectPositions();
         }
 
-        private void addSubObject() {
+        private SubObject addSubObject(boolean autoEdit) {
             int newYPos = 50 + subObjects.size() * spacing;
 
-            // Füge ein neues Sub-Objekt hinzu
-            SubObject newSubObject = new SubObject((this.width - 200) / 2, newYPos, 200);
+            SubObject newSubObject = new SubObject(
+                    (this.width - 200) / 2,
+                    newYPos,
+                    200
+            );
+
             subObjects.add(newSubObject);
             updateSubObjectPositions();
+
+            if (autoEdit) {
+                newSubObject.getTextField().setEditable(true);
+                newSubObject.getTextField().setFocused(true);
+            } else {
+                newSubObject.getTextField().setEditable(false);
+                newSubObject.getTextField().setFocused(false);
+            }
+
+            return newSubObject;
         }
+
 
         private void updateSubObjectPositions() {
             for (int i = 0; i < subObjects.size(); i++) {
@@ -256,10 +278,11 @@ public class TeamManager_Screen extends Screen {
 
         private void loadSubObjects() {
             for (String subObjectText : teamObject.getSubObjects()) {
-                addSubObject();
-                subObjects.getLast().getTextField().setText(subObjectText); // Setze Text in das Textfeld
+                SubObject obj = addSubObject(false); // kein Fokus
+                obj.getTextField().setText(subObjectText);
             }
         }
+
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             //Headline
@@ -267,39 +290,42 @@ public class TeamManager_Screen extends Screen {
             float scaleTitle = 3.0f;
             float scaleFactor = 1.6f;
             int playerHeadXPosition = (int)(((float) width / 2 - 125) * scaleFactor);
-            MatrixStack matrices = context.getMatrices();
-            matrices.push();
-            matrices.scale(scaleTitle, scaleTitle, scaleTitle);
+            Matrix3x2fStack matrices = context.getMatrices();
+            matrices.pushMatrix();
+            matrices.scale(scaleTitle, scaleTitle);
             int scaledWidth = (int) ((float) width / 2 / scaleTitle);
             int scaledY = (int) (20 / scaleTitle);
-            context.drawCenteredTextWithShadow(textRenderer, Text.literal(teamObject.getTeamName()), scaledWidth, scaledY, getColorInt(getTeamColor(teamObject.getTeamName())));
-            matrices.pop();
+            context.drawCenteredTextWithShadow(textRenderer, Text.literal(teamObject.getTeamName()), scaledWidth, scaledY, getColorInt(getTeamColor(teamObject.getTeamName())) );
+            matrices.popMatrix();
 
             for (SubObject subObject : subObjects) {
                 if (subObject.getGameProfileByName() != null) {
-                    matrices.push();
-                    matrices.scale(0.625f, 0.625f, 0.625f);
-                    context.drawTexture(RenderLayer::getGuiTextured, subObject.getGameProfileByName(), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
-                    //MY_LOGGER.info(subObject.getGameProfileByName().getNamespace() + " ..... " + subObject.getGameProfileByName().toString());
-                    matrices.pop();
+                    matrices.pushMatrix();
+                    matrices.scale(0.625f, 0.625f);
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, subObject.getGameProfileByName(), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
+                    matrices.popMatrix();
                 } else {
-                    matrices.push();
-                    matrices.scale(0.625f, 0.625f, 0.625f);
-                    context.drawTexture(RenderLayer::getGuiTextured, Identifier.of(("minecraft:textures/entity/player/wide/steve.png")), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
-                    matrices.pop();
+                    matrices.pushMatrix();
+                    matrices.scale(0.625f, 0.625f);
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(("minecraft:textures/entity/player/wide/steve.png")), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
+                    matrices.popMatrix();
                 }
                 assert MinecraftClient.getInstance().player != null;
             }
         }
 
         public static int getColorInt(Formatting formatting) {
-            // Prüfen, ob die `Formatting`-Farbe eine eigene Farbe besitzt
+            if (formatting == null) {
+                return 0xFFFFFFFF; // Weiß als Fallback
+            }
+
             TextColor color = TextColor.fromFormatting(formatting);
             if (color != null) {
-                return color.getRgb();
+                // RGB → ARGB (Alpha = FF)
+                return 0xFF000000 | color.getRgb();
             }
-            // Rückgabe einer Standardfarbe (z.B. Weiß), falls keine Farbe definiert ist
-            return 0xFFFFFF;
+
+            return 0xFFFFFFFF;
         }
 
         public static Formatting getTeamColor(String teamName){
@@ -322,10 +348,10 @@ public class TeamManager_Screen extends Screen {
             }
             return x;
         }
+
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             for (SubObject subObject : subObjects) {
-
                 if (!isMouseOverButton(mouseX, mouseY, subObject.textField)) {
                     subObject.textField.setFocused(false);
                     subObject.textField.setEditable(false);
@@ -348,8 +374,8 @@ public class TeamManager_Screen extends Screen {
             }
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
-        private boolean isMouseOverButton(double mouseX, double mouseY,TextFieldWidget button) {
 
+        private boolean isMouseOverButton(double mouseX, double mouseY,TextFieldWidget button) {
             int buttonX = button.getX();
             int buttonY = button.getY();
             int buttonWidth = button.getWidth();
@@ -383,7 +409,6 @@ public class TeamManager_Screen extends Screen {
             private final ButtonWidget editButton;
             private ButtonWidget deleteButton;
 
-
             public SubObject(int x, int y, int width) {
                 // Erstelle das Textfeld
                 this.textField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x, y, width, 20, Text.literal("Player " + subObjects.size()));
@@ -393,6 +418,7 @@ public class TeamManager_Screen extends Screen {
 
                 // Erstelle den Bearbeiten-Button
                 this.editButton = ButtonWidget.builder(Text.literal("✎"), button -> {
+                    // Direkt editierbar + Fokus setzen
                     this.textField.setEditable(true);
                     this.textField.setFocused(true);
                 }).dimensions(x - 40, y, 20, 20).build();
@@ -407,8 +433,6 @@ public class TeamManager_Screen extends Screen {
                     updateSubObjectPositions();
                 }).dimensions(x - 80, y, 20, 20).build();
                 addDrawableChild(this.deleteButton);
-
-
             }
 
             // Aktualisiert die Position aller Elemente (Textfeld, Buttons)
@@ -428,18 +452,8 @@ public class TeamManager_Screen extends Screen {
                 return this.textField;
             }
 
-
             public Identifier getGameProfileByName() {
-                String playerName = textField.getText();
-                //GameProfile
-                GameProfile x = null;
-                MinecraftClient client = MinecraftClient.getInstance();
-                for (PlayerListEntry playerListEntry : Objects.requireNonNull(client.getNetworkHandler()).getPlayerList()) {
-                    GameProfile profile = playerListEntry.getProfile();
-                    if (profile.getName().equals(playerName)) {
-                        x = profile;
-                    }
-                }
+                GameProfile x = getGameProfile();
                 if(x==null){
                     return null;
                 }
@@ -454,11 +468,24 @@ public class TeamManager_Screen extends Screen {
 
                 return null; // Wenn keine Textur gefunden wurde
             }
+
+            private @Nullable GameProfile getGameProfile() {
+                String playerName = textField.getText();
+                //GameProfile
+                GameProfile x = null;
+                MinecraftClient client = MinecraftClient.getInstance();
+                if (client.getNetworkHandler() != null) {
+                    for (PlayerListEntry playerListEntry : client.getNetworkHandler().getPlayerList()) {
+                        GameProfile profile = playerListEntry.getProfile();
+                        if (profile.getName().equals(playerName)) {
+                            x = profile;
+                        }
+                    }
+                }
+                return x;
+            }
         }
     }
-
-
-
 
     public class TeamCategoryButton {
         // Neue Attribute für Unterobjekte
@@ -502,7 +529,7 @@ public class TeamManager_Screen extends Screen {
         };
         private int currentColorIndex = 0;
 
-        public TeamCategoryButton(int yPos, String defaultText,TeamManager_Screen tM_screen,Formatting teamColor_) {
+        public TeamCategoryButton(int yPos, String defaultText, TeamManager_Screen tM_screen, Formatting teamColor_) {
             parentScreen = tM_screen;
             int textFieldWidth = 200;
             int textFieldHeight = 20;
@@ -511,8 +538,8 @@ public class TeamManager_Screen extends Screen {
             this.textField.setText(defaultText);
             this.textField.setMaxLength(30); // Maximale Zeichenanzahl
             this.textField.setFocused(false);
-            this.textField.setUneditableColor(11184810);
-            this.textField.setEditableColor(16777215);
+            this.textField.setUneditableColor(0xFFAAAAAA);
+            this.textField.setEditableColor(0xFFFFFFFF);
             if(teamColor_ != null) {
                 teamColor = teamColor_;
                 currentColorIndex = getColorIndex(teamColor);
@@ -543,17 +570,15 @@ public class TeamManager_Screen extends Screen {
                 PlayerColorLoader.loadUserColors(PlayerColorLoader.filePath);
                 saveTeamObjects();
                 MinecraftClient.getInstance().setScreenAndRender(MinecraftClient.getInstance().currentScreen);
-                //MinecraftClient.getInstance().setScreen(new TemporaryScreen(MinecraftClient.getInstance().currentScreen));
             }).dimensions(colorButtonXPos, yPos, buttonSize, buttonSize).build();
             colorButton.setMessage(Text.literal("🟥").setStyle(Style.EMPTY.withColor(teamColor)));
 
             // Stift-Button (Bearbeiten)
             int editButtonXPos = colorButtonXPos + buttonSize + 5;
             this.editButton = ButtonWidget.builder(Text.literal("✎"), button -> {
-                        // Logik zum Bearbeiten des Textes
+                        // Direkt editierbar + Fokus setzen (SOFORT)
                         this.textField.setEditable(true);
                         this.textField.setFocused(true);
-
                     })
                     .dimensions(editButtonXPos, yPos, buttonSize, buttonSize)
                     .build();

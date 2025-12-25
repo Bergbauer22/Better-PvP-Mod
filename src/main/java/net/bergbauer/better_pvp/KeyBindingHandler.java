@@ -13,7 +13,7 @@ public class KeyBindingHandler {
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "OpenGUI",  // Der Name der Keybinding (wird in den Optionen angezeigt)
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_G,               // Die Taste 'G'
+                GLFW.GLFW_KEY_B,               // Die Taste 'G'
                 "Better-PvP"   // Kategorie, unter der die Keybinding erscheint
         ));
         // Registriere ein Tick-Event, um auf das Drücken der Taste zu reagieren
