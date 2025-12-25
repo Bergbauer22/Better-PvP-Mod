@@ -10,7 +10,6 @@ import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import static net.bergbauer.better_pvp.BetterPvP.MY_LOGGER;
 import static net.bergbauer.better_pvp.PlayerColorLoader.ColorIndexOfPlayer;
 import static net.bergbauer.better_pvp.PlayerColorLoader.USER_COLORS;
 
@@ -34,7 +33,7 @@ public class EquipmentRendererMixin {
         String entityName = ctx.entity().getName().getString();
         //MY_LOGGER.info("Name: " + entityName + "  Bool: " + String.valueOf(USER_COLORS.containsKey(entityName)));
         if (ctx.shouldModify() && USER_COLORS.containsKey(entityName)) {
-            MY_LOGGER.info("Text: {} ", texture);
+            //MY_LOGGER.info("Text: {} ", texture);
             int color = ColorIndexOfPlayer(entityName);
             Identifier overlay = switch (texture.toString()){
                 case "minecraft:textures/entity/equipment/humanoid/leather.png" ->
