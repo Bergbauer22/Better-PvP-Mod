@@ -13,75 +13,88 @@ import org.joml.Matrix3x2fStack;
 
 @Environment(EnvType.CLIENT)
 public class BetterPvP_MenuScreen extends Screen {
+
+    // Positions- und Größenkonstanten
+    private static final int EXIT_BUTTON_WIDTH = 40;
+    private static final int EXIT_BUTTON_HEIGHT = 20;
+    private static final int EXIT_BUTTON_X_OFFSET = 60;
+    private static final int EXIT_BUTTON_Y = 20;
+
+    private static final int TEAM_BUTTON_WIDTH = 150;
+    private static final int TEAM_BUTTON_HEIGHT = 20;
+    private static final int TEAM_BUTTON_Y = 160;
+
+    private static final int SETTINGS_BUTTON_WIDTH = 150;
+    private static final int SETTINGS_BUTTON_HEIGHT = 20;
+    private static final int SETTINGS_BUTTON_Y = 190;
+
+    private static final float TITLE_SCALE = 3.0f;
+    private static final float CATEGORY_SCALE = 2.0f;
+
     public BetterPvP_MenuScreen() {
         super(Text.literal("BetterPvP"));
     }
 
-    public ButtonWidget exitButton;
-
-    @Override
-    public void close(){
-        // Öffne den temporären Screen, der sich sofort wieder schließt
-        super.close();
-    }
     @Override
     protected void init() {
-        exitButton = ButtonWidget.builder(Text.literal("Exit"), button -> this.close())
-                .dimensions(width - 60, 20, 40, 20)
+        super.init();
+
+        // Exit Button
+        // Widgets
+        ButtonWidget exitButton = ButtonWidget.builder(Text.literal("Exit"), button -> this.close())
+                .dimensions(width - EXIT_BUTTON_X_OFFSET, EXIT_BUTTON_Y, EXIT_BUTTON_WIDTH, EXIT_BUTTON_HEIGHT)
                 .tooltip(Tooltip.of(Text.literal("You close the current menu")))
                 .build();
         addDrawableChild(exitButton);
+
+        // Unsichtbare Buttons für TeamManager und Settings
+        ButtonWidget teamButton = ButtonWidget.builder(Text.literal(""), button ->
+                        MinecraftClient.getInstance().setScreen(new TeamManager_Screen())
+                ).dimensions(width / 2 - TEAM_BUTTON_WIDTH / 2, TEAM_BUTTON_Y, TEAM_BUTTON_WIDTH, TEAM_BUTTON_HEIGHT)
+                .build();
+        addSelectableChild(teamButton);
+
+        ButtonWidget settingsButton = ButtonWidget.builder(Text.literal(""), button ->
+                        MinecraftClient.getInstance().setScreen(new Settings_Screen())
+                ).dimensions(width / 2 - SETTINGS_BUTTON_WIDTH / 2, SETTINGS_BUTTON_Y, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT)
+                .build();
+        addSelectableChild(settingsButton);
     }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        //Headline
         super.render(context, mouseX, mouseY, delta);
-        float scaleTitle = 3.0f;
+
         Matrix3x2fStack matrices = context.getMatrices();
+
+        // Headline
         matrices.pushMatrix();
-        matrices.scale(scaleTitle, scaleTitle);
-        int scaledWidth = (int) ((float) width / 2 / scaleTitle);
-        int scaledY = (int) (20 / scaleTitle);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("BetterPvP"), scaledWidth, scaledY, 0xFFFF0000  );
+        matrices.scale(TITLE_SCALE, TITLE_SCALE);
+        int scaledWidth = (int) ((float) width / 2 / TITLE_SCALE);
+        int scaledY = (int) (20 / TITLE_SCALE);
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("BetterPvP"), scaledWidth, scaledY, 0xFFFF0000);
         matrices.popMatrix();
-        //TeamCategory-Settings
-        float scaleTeamCategory = 2f;
-        int YTeamCategoryPosition = 160;
-        //TeamManagerButton
+
+        // TeamManager Text
         matrices.pushMatrix();
-        matrices.scale(scaleTeamCategory, scaleTeamCategory);
-        scaledWidth = (int) ((float) width / 2 / scaleTeamCategory);
-        scaledY = (int) (YTeamCategoryPosition / scaleTeamCategory);
-        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFFFFFFF );
+        matrices.scale(CATEGORY_SCALE, CATEGORY_SCALE);
+        scaledWidth = (int) ((float) width / 2 / CATEGORY_SCALE);
+        scaledY = (int) (TEAM_BUTTON_Y / CATEGORY_SCALE);
+        context.drawCenteredTextWithShadow(textRenderer, Text.literal("TeamManager"), scaledWidth, scaledY, 0xFFFFFFFF);
         matrices.popMatrix();
-        //SettingsCategory-Settings
-        float scaleSettingCategory = 2f;
-        int YSettingCategoryPosition = 190;
-        //SettingsButton
+
+        // Settings Text
         matrices.pushMatrix();
-        matrices.scale(scaleSettingCategory, scaleSettingCategory);
-        scaledWidth = (int) ((float) width / 2 / scaleSettingCategory);
-        scaledY = (int) (YSettingCategoryPosition / scaleSettingCategory);
+        matrices.scale(CATEGORY_SCALE, CATEGORY_SCALE);
+        scaledWidth = (int) ((float) width / 2 / CATEGORY_SCALE);
+        scaledY = (int) (SETTINGS_BUTTON_Y / CATEGORY_SCALE);
         context.drawCenteredTextWithShadow(textRenderer, Text.literal("Settings"), scaledWidth, scaledY, 0xFFFFFFFF);
         matrices.popMatrix();
     }
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        // Überprüfe, ob die linke Maustaste gedrückt wurde
-        if (button == 0) {
-            int TM_buttonY = 160;
 
-            if (mouseX >= (double) width / 2 - 75 && mouseX <= (double) width / 2 + 75 && mouseY >= TM_buttonY && mouseY <= TM_buttonY + 20) {
-                MinecraftClient.getInstance().setScreen(new TeamManager_Screen());
-                return true;
-            }
-            int S_buttonY = 190;
-            if (mouseX >= (double) width / 2 - 75 && mouseX <= (double) width / 2 + 75 && mouseY >= S_buttonY && mouseY <= S_buttonY + 20) {
-                MinecraftClient.getInstance().setScreen(new Settings_Screen());
-                return true;
-            }
-        }
-        // Standardverhalten, wenn kein Button gedrückt wurde
-        return super.mouseClicked(mouseX, mouseY, button);
+
+    @Override
+    public void close() {
+        super.close();
     }
 }

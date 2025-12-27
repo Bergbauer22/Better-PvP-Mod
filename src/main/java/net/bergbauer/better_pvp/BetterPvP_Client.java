@@ -9,7 +9,7 @@ public class BetterPvP_Client implements ClientModInitializer {
     @Override
     public void onInitializeClient()
     {
-        KeyBindingHandler.register();
+        KeyBindingHandler.init();
         TickEvent.registerTickEvent();
         loadUserColors(filePathColorLoad);
     }

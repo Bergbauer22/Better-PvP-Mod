@@ -1,7 +1,10 @@
 package net.bergbauer.better_pvp;
 
+import net.bergbauer.better_pvp.util.IdManager;
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -10,8 +13,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static net.bergbauer.better_pvp.gui.TeamManager_Screen.TeamCategoryButton.colors;
+
+// import static net.bergbauer.better_pvp.gui.TeamManager_Screen.TeamCategoryButton.colors;
 
 public class PlayerColorLoader implements ClientModInitializer {
     public static final Map<String, TextColor> USER_COLORS = new HashMap<>();
@@ -72,11 +78,10 @@ public class PlayerColorLoader implements ClientModInitializer {
             return -1;
         }
     }
-    // Hier überschreibst du die Methode, die die Textur des Spielers holt
-    public static Identifier getCustomSkin(AbstractClientPlayerEntity player) {
-        // Hole den Spielernamen
 
-        String playerName = player.getName().getString();
+    public static Identifier getIdentifierById(int id) {
+
+        String playerName = IdManager.getNameFromId(id);
         loadUserColors(filePath);
         // Prüfe, ob der Spieler in der USER_COLORS Map existiert
         if (USER_COLORS.containsKey(playerName)) {
@@ -88,16 +93,12 @@ public class PlayerColorLoader implements ClientModInitializer {
                 // Gib den Identifier der Textur zurück, basierend auf dem Farbindex
                 return Identifier.of( "better_pvp","textures/entity/player/colored_player/skin" + colorIndex + ".png");
             }
-            else{
-                return player.getSkinTextures().texture();
-            }
-        }
-        else {
-            // Standard-Skin verwenden, falls es nicht der gesuchte Spieler ist
-            return player.getSkinTextures().texture();
         }
 
+        // Player nicht gefunden
+        return null;
     }
+
     public static int getColorIndex(TextColor color) {
         // Durchlaufe das colors-Array und vergleiche die Farben
         for (int i = 0; i < colors.length; i++) {

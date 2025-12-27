@@ -8,8 +8,8 @@
   "client": [
     "armor.EquipmentRendererMixin",
     "chat.ChatHud",
-    "entity.EntityRenderDispatcherMixin",
-    "entity.PlayerRenderer"
+    "entity.EntityRenderManagerMixin",
+    "entity.PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

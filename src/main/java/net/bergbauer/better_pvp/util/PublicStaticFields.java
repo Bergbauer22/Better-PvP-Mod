@@ -1,8 +1,7 @@
 package net.bergbauer.better_pvp.util;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 
 public class PublicStaticFields {
-    public static Entity currentEntity = null;
-    public static ArmorContext currentArmorContext = null;
+    public static EntityRenderState currentEntityRenderState = null;
 }

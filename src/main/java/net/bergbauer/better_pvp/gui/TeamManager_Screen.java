@@ -1,6 +1,5 @@
 package net.bergbauer.better_pvp.gui;
 
-import com.mojang.authlib.GameProfile;
 import net.bergbauer.better_pvp.PlayerColorLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -9,25 +8,18 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.texture.PlayerSkinProvider;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static net.bergbauer.better_pvp.BetterPvP.MY_LOGGER;
+import java.util.concurrent.ExecutionException;
 
 public class TeamManager_Screen extends Screen {
     // Variablen
@@ -76,43 +68,6 @@ public class TeamManager_Screen extends Screen {
                 .tooltip(Tooltip.of(Text.literal("Click here to create a new Team")))
                 .build();
         addDrawableChild(createTeamButton);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (TeamCategoryButton teamObject : teamObjects) {
-            if (!isMouseOverButton(mouseX, mouseY, teamObject.textField)) {
-                teamObject.textField.setFocused(false);
-                teamObject.textField.setEditable(false);
-                saveTeamObjects();
-            }
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    // Überprüft, ob die Enter-Taste gedrückt wurde
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            for (TeamCategoryButton teamObject : teamObjects) {
-                teamObject.textField.setFocused(false);
-                teamObject.textField.setEditable(false);
-                saveTeamObjects();
-            }
-            return true; // Blockiert weitere Verarbeitung, wenn gewünscht
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private boolean isMouseOverButton(double mouseX, double mouseY, TextFieldWidget button) {
-        int buttonX = button.getX();
-        int buttonY = button.getY();
-        int buttonWidth = button.getWidth();
-        int buttonHeight = button.getHeight();
-
-        // Überprüfen, ob die Maus sich innerhalb der Button-Grenzen befindet
-        return mouseX >= buttonX && mouseX <= buttonX + buttonWidth
-                && mouseY >= buttonY && mouseY <= buttonY + buttonHeight;
     }
 
     /**
@@ -299,17 +254,14 @@ public class TeamManager_Screen extends Screen {
             matrices.popMatrix();
 
             for (SubObject subObject : subObjects) {
-                if (subObject.getGameProfileByName() != null) {
-                    matrices.pushMatrix();
-                    matrices.scale(0.625f, 0.625f);
-                    context.drawTexture(RenderPipelines.GUI_TEXTURED, subObject.getGameProfileByName(), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
-                    matrices.popMatrix();
-                } else {
-                    matrices.pushMatrix();
-                    matrices.scale(0.625f, 0.625f);
-                    context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(("minecraft:textures/entity/player/wide/steve.png")), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
-                    matrices.popMatrix();
+                matrices.pushMatrix();
+                matrices.scale(0.625f, 0.625f);
+                try {
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, GameProfileUtils.getSkinTextureByName(subObject.textField.getText()), playerHeadXPosition, (int) (subObject.textField.getY() * scaleFactor), 32, 32, 32, 32, 256, 256);
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+                matrices.popMatrix();
                 assert MinecraftClient.getInstance().player != null;
             }
         }
@@ -349,42 +301,6 @@ public class TeamManager_Screen extends Screen {
             return x;
         }
 
-        @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            for (SubObject subObject : subObjects) {
-                if (!isMouseOverButton(mouseX, mouseY, subObject.textField)) {
-                    subObject.textField.setFocused(false);
-                    subObject.textField.setEditable(false);
-                    saveTeamObjects();
-                }
-            }
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
-
-        // Überprüft, ob die Enter-Taste gedrückt wurde
-        @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                for (SubObject subObject : subObjects) {
-                    subObject.textField.setFocused(false);
-                    subObject.textField.setEditable(false);
-                    saveTeamObjects();
-                }
-                return true; // Blockiert weitere Verarbeitung, wenn gewünscht
-            }
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-
-        private boolean isMouseOverButton(double mouseX, double mouseY,TextFieldWidget button) {
-            int buttonX = button.getX();
-            int buttonY = button.getY();
-            int buttonWidth = button.getWidth();
-            int buttonHeight = button.getHeight();
-
-            // Überprüfen, ob die Maus sich innerhalb der Button-Grenzen befindet
-            return mouseX >= buttonX && mouseX <= buttonX + buttonWidth
-                    && mouseY >= buttonY && mouseY <= buttonY + buttonHeight;
-        }
 
         @Override
         public void tick() {
@@ -452,38 +368,6 @@ public class TeamManager_Screen extends Screen {
                 return this.textField;
             }
 
-            public Identifier getGameProfileByName() {
-                GameProfile x = getGameProfile();
-                if(x==null){
-                    return null;
-                }
-                // Hole den PlayerSkinProvider für die Textur verwaltung
-                PlayerSkinProvider skinProvider = MinecraftClient.getInstance().getSkinProvider();
-
-                // Abrufen der Skin-Textur für das GameProfil
-                SkinTextures skinTexture = skinProvider.getSkinTextures(x);
-                if (skinTexture != null) {
-                    return skinProvider.getSkinTextures(x).texture();
-                }
-
-                return null; // Wenn keine Textur gefunden wurde
-            }
-
-            private @Nullable GameProfile getGameProfile() {
-                String playerName = textField.getText();
-                //GameProfile
-                GameProfile x = null;
-                MinecraftClient client = MinecraftClient.getInstance();
-                if (client.getNetworkHandler() != null) {
-                    for (PlayerListEntry playerListEntry : client.getNetworkHandler().getPlayerList()) {
-                        GameProfile profile = playerListEntry.getProfile();
-                        if (profile.getName().equals(playerName)) {
-                            x = profile;
-                        }
-                    }
-                }
-                return x;
-            }
         }
     }
 
