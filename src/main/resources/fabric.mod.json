@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "better_pvp",
+	"version": "${version}",
+	"name": "Better-PvP",
+	"description": "This Mod improves Minecraft PvP on the client Site with virsual enhancments",
+	"authors": [
+		"Bergbauer"
+	],
+	"contact": {
+		"homepage": "https://www.youtube.com/@Bergbauer22",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/better_pvp/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.bergbauer.better_pvp.BetterPvP"
+		],
+		"fabric-datagen": [
+			"net.bergbauer.better_pvp.BetterPvPDataGenerator"
+		],
+		"client": [
+			"net.bergbauer.better_pvp.BetterPvP_Client",
+			"net.bergbauer.better_pvp.PlayerColorLoader"
+		]
+	},
+	"mixins": [
+		"better_pvp.mixins.json"
+
+	],
+	"depends": {
+		"fabricloader": ">=0.16.7",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

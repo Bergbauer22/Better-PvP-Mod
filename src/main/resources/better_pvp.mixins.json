@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "net.bergbauer.better_pvp.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "armor.ArmorFeatureRendererMixin"
+  ],
+  "client": [
+    "armor.EquipmentRendererMixin",
+    "chat.ChatHud",
+    "entity.EntityRenderManagerMixin",
+    "entity.PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
